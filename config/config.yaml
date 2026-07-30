@@ -1,0 +1,36 @@
+server:
+  port: 8080
+  mode: debug   # debug | release | test
+  read_timeout: 10s
+  write_timeout: 10s
+
+database:
+  driver: mysql
+  host: 127.0.0.1
+  port: 3306
+  user: root
+  password: 1234
+  dbname: login
+  charset: utf8mb4
+  max_idle_conns: 10
+  max_open_conns: 100
+  conn_max_lifetime: 1h
+
+redis:
+  host: 127.0.0.1
+  port: 6379
+  password: ""
+  db: 0
+  pool_size: 10
+
+jwt:
+  private_key_path: config/rsa_private.pem
+  public_key_path: config/rsa_public.pem
+  access_token_ttl: 15m
+  refresh_token_ttl: 168h  # 7 days
+
+log:
+  level: info      # debug | info | warn | error
+  format: json     # json | console
+  output: stdout   # stdout | file
+  file_path: logs/app.log
