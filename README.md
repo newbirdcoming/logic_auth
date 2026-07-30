@@ -76,24 +76,38 @@ mysql -u root -p < migrations/001_init.sql
 ### 3. 生成 JWT 密钥
 
 ```bash
-# 任意方式生成 RSA 2048 密钥对，放 config/ 目录即可
-# 例如用 Go 自带的 crypto 生成（项目初次启动自动生成也可以）
-
-# 或者用 OpenSSL（如果有）：
-openssl genrsa -out config/rsa_private.pem 2048
-openssl rsa -in config/rsa_private.pem -pubout -out config/rsa_public.pem
+make gen-key
 ```
 
-> 注：也可以不手动生成，项目启动时若密钥文件不存在，会自动创建（后续迭代）。
 
-### 4. 启动
+### 4. 启动后端
 
 ```bash
 make run
-# 服务默认监听 :8080
+# 服务监听 :8080
 ```
 
-### 5. 测试
+### 5. 启动前端
+
+项目包含 Vite + React 前端，两种方式：
+
+**开发模式**（热重载，推荐）：
+```bash
+cd frontend
+npm install        # 首次需要
+npm run dev        # 打开 http://localhost:5173
+# Vite 自动代理 /api 到后端 :8080
+```
+
+**生产模式**（编译后由 Gin 托管）：
+```bash
+cd frontend
+npm run build
+cd ..
+make run           # 打开 http://localhost:8080
+```
+
+### 6. 测试
 
 ```bash
 # 注册
@@ -144,22 +158,22 @@ rate_limit:{key}       → String, TTL=15min        (限流计数器)
 
 ```
 login/
-├── cmd/server/main.go       # 入口
-├── config/                  # 配置 + RSA密钥
+├── cmd/server/main.go       # 程序入口，启动 HTTP 服务
+├── config/                  # 配置文件 + RSA 密钥对
 ├── internal/
-│   ├── config/              # 配置加载
-│   ├── handler/             # HTTP处理器
-│   ├── service/             # 业务逻辑
-│   ├── repository/          # 数据访问
-│   ├── model/               # 数据模型
-│   ├── dto/                 # 请求/响应
-│   ├── middleware/          # CORS/日志/恢复/JWT鉴权
-│   ├── pkg/jwt/             # JWT工具(RS256)
-│   ├── pkg/hash/            # bcrypt
-│   └── router/              # 路由注册
-├── pkg/database/            # MySQL连接
-├── pkg/cache/               # Redis客户端
-└── migrations/              # SQL迁移
+│   ├── config/config.go     # 配置结构体定义与加载 yaml
+│   ├── handler/             # HTTP 请求处理器（路由回调）
+│   ├── service/             # 核心业务逻辑层
+│   ├── repository/          # 数据访问层（GORM 操作 MySQL）
+│   ├── model/               # GORM 数据模型（表映射）
+│   ├── dto/                 # 请求/响应数据结构体
+│   ├── middleware/          # Gin 中间件（CORS/日志/恢复/JWT鉴权）
+│   ├── pkg/jwt/             # JWT 工具（RS256 签名与验签）
+│   ├── pkg/hash/            # bcrypt 密码加密
+│   └── router/              # 路由注册，组装中间件与处理器
+├── pkg/database/            # MySQL 连接初始化
+├── pkg/cache/               # Redis 客户端（黑名单/用户Token集/限流）
+└── migrations/              # MySQL 初始化建表脚本
 ```
 
 ---

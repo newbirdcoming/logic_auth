@@ -24,6 +24,12 @@ func Setup(
 	r.Use(middleware.Logger(log))
 	r.Use(middleware.Recovery(log))
 
+	// 前端静态文件
+	r.Static("/assets", "./frontend/dist/assets")
+	r.GET("/", func(c *gin.Context) {
+		c.File("./frontend/dist/index.html")
+	})
+
 	// 健康检查
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{"status": "ok"})
