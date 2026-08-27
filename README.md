@@ -1,6 +1,6 @@
 # 🔐 Login Auth Service
 
-> 基于 Go + Gin 的登录授权服务，提供统一身份认证与 Token 管理。
+> 基于 Go + Gin 的登录授权的单体服务，提供统一身份认证与 Token 管理。
 
 [![Go Version](https://img.shields.io/badge/Go-1.25+-00ADD8?logo=go)](https://go.dev/)
 [![Gin](https://img.shields.io/badge/Gin-1.12-0097d3)](https://gin-gonic.com/)
